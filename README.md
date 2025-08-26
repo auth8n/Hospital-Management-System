@@ -1,1 +1,2 @@
 This is a Hospital Management System that I worked on later last year, 2024. It's called TheraCare and it's a system meant for post-rehab patients. It has various pages such as Home Page, About Us, Contact Us, Login/Register Functionality, and even Dashboard for both users, doctors, and admin to see all kinds of data plus an addictional chat functionality too.
+<img width="1894" height="1028" alt="about-us-first" src="https://github.com/user-attachments/assets/7cf4157f-3a9e-4b5b-85d6-b1ccfe0020be" />
