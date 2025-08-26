@@ -1,0 +1,65 @@
+<?php
+include 'db_connect.php'; // Include your database connection file
+
+
+session_start(); // Start the session at the very top of the page
+
+
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Retrieve and sanitize user input
+    $username = trim($_POST['username']);
+    $password = trim($_POST['password']);
+
+    // Check if user exists
+    $stmt = $conn->prepare("SELECT id, username, password FROM users WHERE username = ?");
+    
+    // Check if prepare() failed
+    if ($stmt === false) {
+        die('Prepare failed: ' . htmlspecialchars($conn->error));
+    }
+
+    $stmt->bind_param("s", $username);
+    $stmt->execute();
+    $stmt->bind_result($id, $username, $hashedPassword);
+    $stmt->fetch();
+
+    // Verify user credentials
+    if ($id && password_verify($password, $hashedPassword)) {
+        // Start a session and store user info
+        $_SESSION['id'] = $id;
+        $_SESSION['username'] = $username;
+        $_SESSION['last_activity'] = time(); // Set last activity time
+
+        // Generate initials from the username
+        function generateInitials($name) {
+            $nameParts = explode(' ', $name);
+            $initials = '';
+            foreach ($nameParts as $part) {
+                if (!empty($part)) {
+                    $initials .= strtoupper($part[0]);
+                }
+            }
+            return $initials;
+        }
+
+        // Store and send the initials
+        $initials = generateInitials($username);
+        $_SESSION['initials'] = $initials;
+
+        // Send JSON response
+        echo json_encode([
+            "status" => "success",
+            "username" => $username,
+            "initials" => $initials
+        ]);
+        exit();
+    } else {
+        echo json_encode(["status" => "error", "message" => "Invalid username or password."]);
+    }
+
+    $stmt->close();
+}
+
+$conn->close();
+?>
